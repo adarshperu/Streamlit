@@ -9,7 +9,7 @@ cars_df = pd.read_excel("cars24-car-price.xlsx")
 
 st.write(
     """
-     # Cars24 Used Car Price Prediction
+     # Cars24 Used Car Price Prediction --by Adarsh
     """
 )
 st.dataframe(cars_df.head())
@@ -23,13 +23,13 @@ encode_dict = {
 }
 
 
-def model_pred(fuel_type, transmission_type, engine, seats):
+def model_pred(year, km_driven, fuel_type, transmission_type, engine, seats):
     
     ## loading the model
     with open("car_pred", 'rb') as file:
         reg_model = pickle.load(file)
         
-        input_features = [[2018.0, 1, 4000, fuel_type, transmission_type, 19.70, engine, 86.30, seats]]
+        input_features = [[year, 1, km_driven, fuel_type, transmission_type, 19.70, engine, 86.30, seats]]
         
         return reg_model.predict(input_features)
     
@@ -43,6 +43,12 @@ fuel_type = col1.selectbox("Select the fuel type",
 engine = col1.slider("Set the Engine Power",
                      500, 5000, step=100)
 
+year = col1.selectbox("Select Year of Manufacture",
+                      range(2010, 2025))
+
+km_driven = col2.slider("Kilometers Driven", 
+                              0, 500000, step=1000)
+
 transmission_type = col2.selectbox("Select the transmission type", 
                                    ["Manual", "Automatic"])
 
@@ -54,6 +60,6 @@ if (st.button("Predict Price")):
     fuel_type = encode_dict['fuel_type'][fuel_type]
     transmission_type = encode_dict['transmission_type'][transmission_type]
     
-    price = model_pred(fuel_type, transmission_type, engine, seats)
+    price = model_pred(year, km_driven,fuel_type, transmission_type, engine, seats)
     
     st.subheader(f"Predicted Price of the car is: {str(round(price[0],2))} lakhs")
